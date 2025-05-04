@@ -4,23 +4,16 @@
  CREATE TABLE ProductDetail (
     OrderID INT,
     CustomerName VARCHAR(100),
-    Products VARCHAR(255)
+    Products VARCHAR(100)
 );
 
 INSERT INTO ProductDetail (OrderID, CustomerName, Products) VALUES
-(101, 'John Doe', 'Laptop, Mouse'),
-(102, 'Jane Smith', 'Tablet, Keyboard, Mouse'),
+(101, 'John Doe', 'Laptop'),
+(101, 'John Doe', 'Mouse'),
+(102, 'Jane Smith', 'Tablet'),
+(102, 'Jane Smith', 'Keyboard'),
+(102, 'Jane Smith', 'Mouse'),
 (103, 'Emily Clark', 'Phone');
-
-
-
-Transforming to 1NF
-SELECT
-    OrderID,
-    CustomerName,
-    TRIM(SUBSTRING_INDEX(Products, ',', 1)) AS Product,
-    SUBSTRING(Products, LENGTH(SUBSTRING_INDEX(Products, ',', 1)) + 2) AS remaining
-FROM ProductDetail;
 
 
 -- Question two transforming to 2NF by removing partial dependencies
@@ -40,10 +33,24 @@ CREATE TABLE OrderItems (
 
 -- inserting into orders
 INSERT INTO Orders (OrderID, CustomerName)
-SELECT DISTINCT OrderID, CustomerName
-FROM ProductDetail;
+VALUES
+(101, 'John Doe'),
+(102, 'Jane Smith'),
+(103, 'Emily Clark');
 
--- inserting into order items
-INSERT INTO OrderItems (OrderID, Products, Quantity)
-SELECT OrderID, Products, Quantity
-FROM ProductDetail;
+CREATE TABLE Product(
+OrderID INT,
+Product VARCHAR(100),
+Quantity INT,
+PRIMARY KEY(OrderID, Product),
+FOREIGN KEY(OrderID) REFERENCES Orders(OrderID)
+);
+
+INSERT INTO Product(OrderID, Product, Quantity)
+VALUES
+(101, 'Laptop', 2),
+(101, 'Mouse', 1),
+(102, 'Tablet', 3),
+(102, 'Keyboard', 1),
+(102, 'Mouse', 2),
+(103, 'Phone', 1);
